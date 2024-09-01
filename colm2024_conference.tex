@@ -129,7 +129,9 @@ Recent papers focus on modifying the RoPE equation to extend length. We consider
 \end{equation}
 
 
-\textbf{Neural Tangent Kernel Interpolation RoPE (NTK-RoPE) } modifies the base frequency of the rotation in RoPE by modifying $\bm{\theta}^d_j = b^{-\frac{2j}{d_k}}$ to $\bm{\theta}^d_j = (b\kappa)^{-\frac{2j}{d_k}}$.  When $j= \frac{d_k}{2}-1$, NTK-RoPE sets  $(b\kappa)^{-\frac{2j}{d_k}} = \frac{1}{\alpha} (b^{-\frac{2j}{d_k}})$.  Hence $\kappa$ can be derived as  $\kappa = (\frac{C'}{C})^{\frac{d_k}{d_k-2}} = \alpha^{\frac{d_k}{d_k-2}}$. NTK-RoPE can be written as 
+\textbf{Neural Tangent Kernel Interpolation RoPE (NTK-RoPE) } addresses the limitations of Linear Position Interpolation (PI) by adjusting the frequency base more dynamically. While PI scales the position linearly, it may not adequately capture the non-linear relationships in extended contexts. NTK-RoPE modifies the base frequency of the rotation in RoPE by changing $\bm{\theta}^d_j = b^{-\frac{2j}{d_k}}$ to $\bm{\theta}^d_j = (b\kappa)^{-\frac{2j}{d_k}}$. This adjustment allows NTK-RoPE to better preserve the relative positional encoding over longer sequences.
+
+When $j= \frac{d_k}{2}-1$, NTK-RoPE sets  $(b\kappa)^{-\frac{2j}{d_k}} = \frac{1}{\alpha} (b^{-\frac{2j}{d_k}})$. Hence, $\kappa$ can be derived as  $\kappa = (\frac{C'}{C})^{\frac{d_k}{d_k-2}} = \alpha^{\frac{d_k}{d_k-2}}$. This derivation shows how NTK-RoPE compensates for the linear scaling limitation by introducing a non-linear scaling factor, $\kappa$, which adapts based on the context length extension. NTK-RoPE can be written as 
 
 \begin{equation}
  \mathbf{f}_\mathbf{W}^{\text{NTK-RoPE}}(\mathbf{x}_i) = \mathbf{f}(\mathbf{x}_i,   \alpha^{-\frac{2j}{d_k-2}} \odot \bm{\theta}^d),
