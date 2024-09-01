@@ -24,12 +24,12 @@
 \maketitle
 
 \begin{abstract}
-This paper explores the intricate connections between position embeddings, the Neural Tangent Kernel (NTK), and Fourier features in deep learning models. We demonstrate how these concepts are fundamentally linked through the lens of harmonic analysis and kernel methods. Our analysis reveals that position embeddings can be viewed as approximations of the NTK, which in turn can be expressed using Fourier features. We show how Euler's formula provides a unifying framework for understanding these relationships, offering insights into model behavior and guiding the design of more effective architectures.
+This paper explores the intricate connections between position embeddings and Fourier features in deep learning models. We demonstrate how these concepts are fundamentally linked through the lens of harmonic analysis. Our analysis reveals that position embeddings can be expressed using Fourier features, which provides a framework for understanding context length extension in attention mechanisms. We show how Euler's formula provides a unifying framework for understanding these relationships, offering insights into model behavior and guiding the design of more effective architectures.
 \end{abstract}
 
 \section{Introduction}
 
-Position embeddings have become an essential component in many deep learning architectures, particularly in sequence modeling tasks. Concurrently, the Neural Tangent Kernel (NTK) has emerged as a powerful tool for analyzing neural network behavior, while Fourier features have shown promise in improving model performance. This paper explores the deep connections between these concepts, revealing a unifying perspective that enhances our understanding of modern deep learning models.
+Position embeddings have become an essential component in many deep learning architectures, particularly in sequence modeling tasks. Fourier features have shown promise in improving model performance, especially in the context of extending the effective context length in attention mechanisms. This paper explores the deep connections between these concepts, revealing a unifying perspective that enhances our understanding of modern deep learning models.
 
 \section{Theoretical Foundations}
 
@@ -53,21 +53,13 @@ Using Euler's formula, $e^{i\omega x} = \cos(\omega x) + i\sin(\omega x)$, we ca
 
 This representation highlights the connection to the Fourier transform and provides a bridge to the Neural Tangent Kernel.
 
-\subsection{Neural Tangent Kernel and Fourier Features}
+\subsection{Context Length Extension with Fourier Features}
 
-The Neural Tangent Kernel is a theoretical framework that describes the behavior of wide neural networks during training \citep{Jacot2018}. Interestingly, the NTK can be expressed in terms of Fourier features.
-
-For a neural network with activation function $\sigma$, the NTK is given by:
-
-\begin{equation}
-    K(x, x') = \int_{\mathbb{R}} |\hat{\sigma}(\omega)|^2 e^{i\omega(x-x')} d\omega
-\end{equation}
-
-where $\hat{\sigma}$ is the Fourier transform of $\sigma$. This formulation shows that the NTK is a convolution in the frequency domain, which can be approximated using Fourier features.
+Fourier features provide a powerful tool for extending the effective context length in attention mechanisms. By leveraging the properties of Fourier transforms, we can perform linear interpolation and change of base (nonlinear) to adaptively adjust the context length.
 
 \subsection{Unifying Perspective}
 
-The connections between position embeddings, NTK, and Fourier features form a unifying perspective that deepens our understanding of these concepts. We will now provide formal proofs and expanded explanations for these connections.
+The connections between position embeddings and Fourier features form a unifying perspective that deepens our understanding of these concepts. We will now provide formal proofs and expanded explanations for these connections.
 
 \subsubsection{Position Embeddings as Fourier Feature Mapping}
 
