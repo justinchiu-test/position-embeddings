@@ -38,21 +38,17 @@ Position embeddings have become an essential component in many deep learning arc
 Position embeddings, particularly sinusoidal embeddings used in Transformer models \citep{Vaswani2017}, can be viewed as a form of Fourier feature mapping. Consider the sinusoidal position embedding function $\phi(x)$ for a 1D input $x$:
 
 \begin{equation}
-    \phi(x) = [\sin(\omega_1 x), \cos(\omega_1 x), \sin(\omega_2 x), \cos(\omega_2 x), ..., \sin(\omega_d x), \cos(\omega_d x)]
+    \phi(x) = \left[\sin\left(\frac{x}{10000^{2i/d}}\right), \cos\left(\frac{x}{10000^{2i/d}}\right)\right]_{i=0}^{d/2-1}
 \end{equation}
 
-where $\omega_i = 1/10000^{2i/d}$ for $i = 0, 1, ..., d/2 - 1$.
+where $\omega_i = \frac{1}{10000^{2i/d}}$ for $i = 0, 1, ..., d/2 - 1$.
 
 This embedding is essentially a Fourier feature mapping with a specific choice of frequencies. The connection becomes even clearer when we consider Euler's formula:
 
-\begin{equation}
-    e^{i\omega x} = \cos(\omega x) + i\sin(\omega x)
-\end{equation}
-
-Using Euler's formula, we can express the position embedding in complex form:
+Using Euler's formula, $e^{i\omega x} = \cos(\omega x) + i\sin(\omega x)$, we can express the position embedding in complex form:
 
 \begin{equation}
-    \phi(x) = [e^{i\omega_1 x}, e^{-i\omega_1 x}, e^{i\omega_2 x}, e^{-i\omega_2 x}, ..., e^{i\omega_d x}, e^{-i\omega_d x}]
+    \phi(x) = \left[e^{i\frac{x}{10000^{2i/d}}}, e^{-i\frac{x}{10000^{2i/d}}}\right]_{i=0}^{d/2-1}
 \end{equation}
 
 This representation highlights the connection to the Fourier transform and provides a bridge to the Neural Tangent Kernel.
@@ -61,13 +57,13 @@ This representation highlights the connection to the Fourier transform and provi
 
 The Neural Tangent Kernel is a theoretical framework that describes the behavior of wide neural networks during training \citep{Jacot2018}. Interestingly, the NTK can be expressed in terms of Fourier features.
 
-For a neural network with activation function $\sigma$, the NTK can be written as:
+For a neural network with activation function $\sigma$, the NTK is given by:
 
 \begin{equation}
-    K(x, x') = \int_{\mathbb{R}} \hat{\sigma}(\omega) \hat{\sigma}(\omega) e^{i\omega(x-x')} d\omega
+    K(x, x') = \int_{\mathbb{R}} |\hat{\sigma}(\omega)|^2 e^{i\omega(x-x')} d\omega
 \end{equation}
 
-where $\hat{\sigma}$ is the Fourier transform of $\sigma$. This formulation reveals that the NTK is essentially a convolution in the frequency domain, which can be approximated using Fourier features.
+where $\hat{\sigma}$ is the Fourier transform of $\sigma$. This formulation shows that the NTK is a convolution in the frequency domain, which can be approximated using Fourier features.
 
 \subsection{Unifying Perspective}
 
