@@ -31,51 +31,115 @@ This paper explores the use of Fourier features to extend the context length in 
 
 Fourier features have shown promise in improving model performance, particularly in the context of extending the effective context length in attention mechanisms. This paper explores how Fourier features can be utilized to achieve context length extension, revealing a perspective that enhances our understanding of modern deep learning models.
 
-\section{Theoretical Foundations}
 
-\subsection{Fourier Features for Context Length Extension}
 
-Fourier features provide a powerful tool for extending the effective context length in attention mechanisms. By leveraging the properties of Fourier transforms, we can perform linear interpolation and change of base (nonlinear) to adaptively adjust the context length. This section explores how these techniques can be applied to enhance attention mechanisms.
+\subsection{Background: Attention and RoPE}
 
-\subsection{Context Length Extension with Fourier Features}
+The bottleneck in long context modeling in Transformers is attention. Attention is defined over 
+$C$ embeddings $\mathbf{X} = [\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_C]^\top \in \mathbb{R}^{C \times d}$ where $d$ is the model dimension. Learned weight matrices $\mathbf{W}_v \in \mathbb{R}^{d \times d_k}$, $\mathbf{W}_q \in \mathbb{R}^{d \times d_k}$, and $\mathbf{W}_k \in \mathbb{R}^{d \times d_k}$ are used to transform these inputs where $d_k$ is the projected hidden dimension.  The attention mechanism itself computes the attention matrix and applies it to produce a weighted sum of the value vectors:
+\begin{equation}
+\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \mathbf{A} \mathbf{V} = \text{softmax}\left(\frac{\mathbf{Q} \mathbf{K}^\top}{\sqrt{d_k}}\right)\mathbf{V}.
+\end{equation}
+Basic attention was originally defined with: $\mathbf{Q} = \mathbf{X} \mathbf{W}_q, \mathbf{K} = \mathbf{X} \mathbf{W}_k, \mathbf{V} = \mathbf{X} \mathbf{W}_v
+$. However, this approach does not directly encode the relative position of keys and values. 
 
-Fourier features provide a powerful tool for extending the effective context length in attention mechanisms. By leveraging the properties of Fourier transforms, we can perform linear interpolation and change of base (nonlinear) to adaptively adjust the context length.
 
-\subsection{Unifying Perspective}
+Rotary Position Embeddings (RoPE) \citep{su2024roformer} encode positional information by applying a phase rotation to each element of the embedding vectors. Formally, we let us define a general transformation $\mathbf{f}$:
 
-The connections between position embeddings and Fourier features form a unifying perspective that deepens our understanding of these concepts. We will now provide formal proofs and expanded explanations for these connections.
 
-These techniques provide several insights:
+\begin{equation}
+\mathbf{f}_\mathbf{W}(\mathbf{x}_i, \bm{\theta}) = \mathbf{R}(\bm{\theta}, i)\mathbf{W}^\top \mathbf{x}_i
+\end{equation}
 
-\begin{enumerate}
-    \item Fourier features enable models to capture a broader range of frequencies, which is crucial for extending context length in attention mechanisms.
-    \item Linear interpolation using Fourier features allows for smooth transitions between different context lengths, enhancing model flexibility.
-    \item Nonlinear change of base techniques can be employed to dynamically adjust context length based on input characteristics, improving model adaptability.
-    \item This perspective suggests that attention mechanisms can be optimized by considering the spectral properties of the data and the desired context length for a given task.
-\end{enumerate}
+Here $\mathbf{x}_i \in \mathbb{R}^{d_k}$ is an embedding for position $i$, $\mathbf{W}$ is a projection matrix, and $\bm{\theta} \in \mathbb{R}^{d_k / 2}$ is a frequency basis. The function is defined based on the rotary position matrix: 
 
-Furthermore, this approach opens up new avenues for research:
+\begin{equation}
+\mathbf{R}(\bm{\theta},i)= \begin{pmatrix}
+\cos i\theta_1 & - \sin i\theta_1 &  \cdots & 0 & 0 \\
+\sin i\theta_1 & \cos i\theta_1 & \cdots & 0 & 0 \\
+% 0 & 0 & \cos m\theta_2 & - \sin m\theta_2 & \cdots & 0 & 0 \\
+% 0 & 0 & \sin m\theta_2 & \cos m\theta_2 & \cdots & 0 & 0 \\
+\vdots \\ 
+0 & 0 &  \cdots & \cos i\theta_\frac{d_k}{2}  & - \sin i\theta_\frac{d_k}{2}  \\
+0 & 0 &  \cdots & \sin i\theta_\frac{d_k}{2}  & \cos i\theta_\frac{d_k}{2}  \\
+\end{pmatrix}
+\end{equation}
 
-\begin{enumerate}
-    \item Developing new attention mechanisms that leverage Fourier features for context length extension.
-    \item Investigating the relationship between Fourier features and the inductive biases introduced by different attention designs.
-    \item Exploring how the interplay between Fourier features and attention mechanisms affects model generalization and extrapolation capabilities.
-\end{enumerate}
 
-\section{Practical Implications}
 
-Understanding the use of Fourier features for context length extension has several practical implications:
 
-\begin{enumerate}
-    \item Architecture design: Fourier features can guide the design of more effective attention mechanisms for context length extension.
-    \item Initialization strategies: Insights from Fourier features can inform better initialization of attention mechanisms for improved training dynamics.
-    \item Transfer learning: The use of Fourier features suggests that models with well-designed attention mechanisms may transfer more effectively across tasks with different input distributions.
-    \item Interpretability: Analyzing attention mechanisms in the Fourier domain can provide insights into what patterns the model has learned to recognize.
-\end{enumerate}
 
-\section{Conclusion}
+% \begin{equation}
+% (\mathbf{R}_{\theta,m})_j = 
+% \begin{bmatrix}
+% \text{cos} m\theta_j & -\text{sin} m\theta_j \\
+% \text{sin} m\theta_j & \text{cos} m\theta_j
+% \end{bmatrix}.
+% \end{equation}
+ 
+% For example, $\mathbf{q_m}$ can be viewed as the following, 
 
-By exploring the use of Fourier features for context length extension in attention mechanisms, we gain a deeper understanding of the theoretical underpinnings of modern deep learning architectures. This perspective not only enhances our theoretical understanding but also provides practical guidance for designing more effective and interpretable models. Future work may further explore these techniques to develop novel architectures and training strategies that leverage these insights.
+% \[
+% \mathbf{f}_{\mathbf{W}_q}(\mathbf{x}_m, m) = 
+% \begin{pmatrix}
+% \text{cos} m\theta_1 & - \text{sin} m\theta_1 & 0 & 0 & \cdots & 0 & 0 \\
+% \text{sin} m\theta_1 & \text{cos} m\theta_1 & 0 & 0 & \cdots & 0 & 0 \\
+% 0 & 0 & \text{cos} m\theta_2 & - \text{sin} m\theta_2 & \cdots & 0 & 0 \\
+% 0 & 0 & \text{sin} m\theta_2 & \text{cos} m\theta_2 & \cdots & 0 & 0 \\
+% 0 & 0 & 0 & 0 & \cdots & \text{cos} m\theta_\frac{d}{2}  & - \text{sin} m\theta_\frac{d}{2}  \\
+% 0 & 0 & 0 & 0 & \cdots & \text{sin} m\theta_\frac{d_k}{2}  & \text{cos} m\theta_\frac{d_k}{2}  \\
+% \end{pmatrix}\mathbf{W^\top_q}\mathbf{x}_m.
+% \]
+
+Due to the arrangement of frequencies, this matrix has the property that $\mathbf{R}(\bm{\theta},n - m) = \mathbf{R}(\bm{\theta},m)^\top\mathbf{R}(\bm{\theta},n)$. We redefine the query-key product between two positions $m$ and $n$ as, 
+
+\begin{align}
+\mathbf{q}^\top_m{\mathbf{k}_n}&=\mathbf{f}_{\mathbf{W}_q}(\mathbf{x}_m, m, \bm{\theta})^\top\mathbf{f}_{\mathbf{W}_k}(\mathbf{x}_n, n, \bm{\theta}) \\ 
+& = \left(\mathbf{R}({\bm{\theta},m})\mathbf{W}^\top_q\mathbf{x}_m \right)^\top \left( \mathbf{R}(\bm{\theta},n)\mathbf{W}^\top_k\mathbf{x}_n \right) \\
+&= \mathbf{x}_m^\top\mathbf{W}_q \mathbf{R}(\bm{\theta},n - m) \mathbf{W}_k^\top\mathbf{x}_n 
+\end{align}
+
+In this way, the relative positional information $n-m$
+is implicitly injected into the query and key product, thus the attention score.
+
+The standard RoPE transformation utilizes: 
+
+\begin{equation}
+\mathbf{f}_\mathbf{W}^{\text{RoPE}}(x_i) = \mathbf{f}(x_i, \bm{\theta}^d).
+\end{equation}
+
+where $\bm{\theta}^d_j = b^{-\frac{2j}{d_k}}$ and base $b=10000$. 
+
+
+
+% We can then obtain RoPE-based attention at $m$-th position as 
+
+% \begin{equation}
+% \text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V})_m = \frac{\sum_{n=1}^{C}\exp(\mathbf{q}_m^T \mathbf{k}_n / \sqrt{d_k})\mathbf{v}_n}{\sum_{n=1}^{C} \exp(\mathbf{q}_m^T \mathbf{k}_n / \sqrt{d_k})}.
+% \end{equation}
+
+% where $\mathbf{v}_n = \mathbf{R}_{\bm{\theta},n}\mathbf{W}^\top_v\mathbf{x}_n$. Note that this calculation still yields $O(C^2)$ complexity.
+
+\subsection{Adjusting Frequency Base of RoPE for Long Context Extensions}
+
+Recent papers focus on modifying the RoPE equation to extend length. We consider four methods: Position Interpolation (PI)~\citep{chen2023extending}, NTK-RoPE~\citep{emozillareddit}, YaRN~\citep{peng2023yarn} and CLEX~\citep{chen2024clexcontinuouslengthextrapolation}. In this section we assume that the goal is to extend a method trained to work with $C$ positions to instead work with $C' >> C$. We refer to the ratio $\alpha = \frac{C'}{C}$ as the \textit{scale factor}.
+
+\textbf{Linear Position Interpolation (PI)} involves down-scaling the frequency coefficient $i$ to align with the original context size. PI has been integrated into many open-source models such as LLaMA-2-7B-32K~\citep{together-instruct}, Vicuna-7B-v1.5~\citep{vicuna2023}, and LongAlpaca~\citep{chen2023longlora}. PI works by interpolating the position for a token originally at position $i$ by a scale factor to be at pseudo-position $\frac{i}{\alpha}$.
+ PI can be implemented by changing the frequency base $\bm{\theta}$:
+\begin{equation}
+\mathbf{f}_\mathbf{W}^{\text{PI}}(x_i) = \mathbf{f}(x_i, \alpha^{-1} \odot \bm{\theta}^d).
+\end{equation}
+
+
+\textbf{Neural Tangent Kernel Interpolation RoPE (NTK-RoPE) } modifies the base frequency of the rotation in RoPE by modifying $\bm{\theta}^d_j = b^{-\frac{2j}{d_k}}$ to $\bm{\theta}^d_j = (b\kappa)^{-\frac{2j}{d_k}}$.  When $j= \frac{d_k}{2}-1$, NTK-RoPE sets  $(b\kappa)^{-\frac{2j}{d_k}} = \frac{1}{\alpha} (b^{-\frac{2j}{d_k}})$.  Hence $\kappa$ can be derived as  $\kappa = (\frac{C'}{C})^{\frac{d_k}{d_k-2}} = \alpha^{\frac{d_k}{d_k-2}}$. NTK-RoPE can be written as 
+
+\begin{equation}
+ \mathbf{f}_\mathbf{W}^{\text{NTK-RoPE}}(\mathbf{x}_i) = \mathbf{f}(\mathbf{x}_i,   \alpha^{-\frac{2j}{d_k-2}} \odot \bm{\theta}^d),
+\end{equation}
+
+An extension to this approach, Dynamic NTK-RoPE suggests that instead of using a fixed scale factor $\alpha$ during inference, the formula should adapt to the current context length for a specific example. One implementation updates the scale factor to $\alpha_{\text{test}} = \frac{s C_\text{test}}{C} - (s - 1)$, where $s \in [1, \frac{C'}{C}]$ is a hyperparameter used to adjust $\alpha_{\text{test}}$ and $C_\text{test}$ is maximum observed length during training or inference ~\citep{fu2024data}.
+
+Another approach from \citep{fu2024data}, sets $\alpha_{\text{test}} = s \cdot \frac{\max(C', C_\text{test})}{C}-(s-1)$, where $s$ is set to $\frac{C'}{2C}$ during training and inference.
 
 \bibliography{colm2024_conference}
 \bibliographystyle{colm2024_conference}
