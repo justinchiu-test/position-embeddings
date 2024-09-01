@@ -15,7 +15,7 @@
 
 \newtheorem{theorem}{Theorem}
 
-\title{Unifying Position Embeddings, Neural Tangent Kernel, and Fourier Features}
+\title{Extending Context Length in Attention Mechanisms with Fourier Features}
 
 \author{Anonymous Author(s)}
 
@@ -24,34 +24,18 @@
 \maketitle
 
 \begin{abstract}
-This paper explores the intricate connections between position embeddings and Fourier features in deep learning models. We demonstrate how these concepts are fundamentally linked through the lens of harmonic analysis. Our analysis reveals that position embeddings can be expressed using Fourier features, which provides a framework for understanding context length extension in attention mechanisms. We show how Euler's formula provides a unifying framework for understanding these relationships, offering insights into model behavior and guiding the design of more effective architectures.
+This paper explores the use of Fourier features to extend the context length in attention mechanisms within deep learning models. By leveraging the properties of Fourier transforms, we provide a framework for understanding and implementing context length extension through linear interpolation and change of base techniques. This approach offers insights into model behavior and guides the design of more effective architectures.
 \end{abstract}
 
 \section{Introduction}
 
-Position embeddings have become an essential component in many deep learning architectures, particularly in sequence modeling tasks. Fourier features have shown promise in improving model performance, especially in the context of extending the effective context length in attention mechanisms. This paper explores the deep connections between these concepts, revealing a unifying perspective that enhances our understanding of modern deep learning models.
+Fourier features have shown promise in improving model performance, particularly in the context of extending the effective context length in attention mechanisms. This paper explores how Fourier features can be utilized to achieve context length extension, revealing a perspective that enhances our understanding of modern deep learning models.
 
 \section{Theoretical Foundations}
 
-\subsection{Position Embeddings and Fourier Features}
+\subsection{Fourier Features for Context Length Extension}
 
-Position embeddings, particularly sinusoidal embeddings used in Transformer models \citep{Vaswani2017}, can be viewed as a form of Fourier feature mapping. Consider the sinusoidal position embedding function $\phi(x)$ for a 1D input $x$:
-
-\begin{equation}
-    \phi(x) = \left[\sin\left(\frac{x}{10000^{2i/d}}\right), \cos\left(\frac{x}{10000^{2i/d}}\right)\right]_{i=0}^{d/2-1}
-\end{equation}
-
-where $\omega_i = \frac{1}{10000^{2i/d}}$ for $i = 0, 1, ..., d/2 - 1$.
-
-This embedding is essentially a Fourier feature mapping with a specific choice of frequencies. The connection becomes even clearer when we consider Euler's formula:
-
-Using Euler's formula, $e^{i\omega x} = \cos(\omega x) + i\sin(\omega x)$, we can express the position embedding in complex form:
-
-\begin{equation}
-    \phi(x) = \left[e^{i\frac{x}{10000^{2i/d}}}, e^{-i\frac{x}{10000^{2i/d}}}\right]_{i=0}^{d/2-1}
-\end{equation}
-
-This representation highlights the connection to the Fourier transform and provides a bridge to the Neural Tangent Kernel.
+Fourier features provide a powerful tool for extending the effective context length in attention mechanisms. By leveraging the properties of Fourier transforms, we can perform linear interpolation and change of base (nonlinear) to adaptively adjust the context length. This section explores how these techniques can be applied to enhance attention mechanisms.
 
 \subsection{Context Length Extension with Fourier Features}
 
@@ -61,103 +45,37 @@ Fourier features provide a powerful tool for extending the effective context len
 
 The connections between position embeddings and Fourier features form a unifying perspective that deepens our understanding of these concepts. We will now provide formal proofs and expanded explanations for these connections.
 
-\subsubsection{Position Embeddings as Fourier Feature Mapping}
-
-\begin{theorem}
-Sinusoidal position embeddings are equivalent to a Fourier feature mapping.
-\end{theorem}
-
-\begin{proof}
-Recall the sinusoidal position embedding function $\phi(x)$:
-
-\begin{equation}
-    \phi(x) = [\sin(\omega_1 x), \cos(\omega_1 x), \sin(\omega_2 x), \cos(\omega_2 x), ..., \sin(\omega_d x), \cos(\omega_d x)]
-\end{equation}
-
-Using Euler's formula, we can express this in complex form:
-
-\begin{equation}
-    \phi(x) = [e^{i\omega_1 x}, e^{-i\omega_1 x}, e^{i\omega_2 x}, e^{-i\omega_2 x}, ..., e^{i\omega_d x}, e^{-i\omega_d x}]
-\end{equation}
-
-This is precisely the form of a Fourier feature mapping $\psi(x) = [e^{i\omega_1 x}, e^{i\omega_2 x}, ..., e^{i\omega_d x}]$ with the addition of complex conjugates. Therefore, sinusoidal position embeddings are equivalent to a real-valued Fourier feature mapping.
-\end{proof}
-
-\subsubsection{NTK as an Integral over Fourier Features}
-
-\begin{theorem}
-The Neural Tangent Kernel can be expressed as an integral over Fourier features.
-\end{theorem}
-
-\begin{proof}
-For a neural network with activation function $\sigma$, the NTK is given by:
-
-\begin{equation}
-    K(x, x') = \int_{\mathbb{R}} \hat{\sigma}(\omega) \hat{\sigma}(\omega) e^{i\omega(x-x')} d\omega
-\end{equation}
-
-where $\hat{\sigma}$ is the Fourier transform of $\sigma$. We can rewrite this as:
-
-\begin{equation}
-    K(x, x') = \int_{\mathbb{R}} |\hat{\sigma}(\omega)|^2 e^{i\omega(x-x')} d\omega
-\end{equation}
-
-This is a continuous version of a Fourier feature mapping, where $|\hat{\sigma}(\omega)|^2$ acts as a weighting function over the frequencies. Thus, the NTK is indeed an integral over Fourier features.
-\end{proof}
-
-\subsubsection{Position Embeddings as NTK Approximation}
-
-\begin{theorem}
-For certain activation functions, position embeddings can approximate the NTK.
-\end{theorem}
-
-\begin{proof}
-Consider a neural network with a periodic activation function $\sigma$ that has a sparse Fourier transform $\hat{\sigma}(\omega)$. The NTK for this network can be approximated by:
-
-\begin{equation}
-    K(x, x') \approx \sum_{k=1}^d c_k \cos(\omega_k(x-x'))
-\end{equation}
-
-where $c_k$ are coefficients derived from $|\hat{\sigma}(\omega_k)|^2$. This approximation has the same form as the inner product of two position embeddings:
-
-\begin{equation}
-    \langle \phi(x), \phi(x') \rangle = \sum_{k=1}^d [\sin(\omega_k x)\sin(\omega_k x') + \cos(\omega_k x)\cos(\omega_k x')]
-\end{equation}
-
-Using the trigonometric identity $\cos(a-b) = \cos(a)\cos(b) + \sin(a)\sin(b)$, we can see that the position embedding inner product approximates the NTK, with the coefficients $c_k$ absorbed into the choice of frequencies $\omega_k$.
-\end{proof}
-
-These proofs formalize the connections between position embeddings, NTK, and Fourier features. This unifying perspective provides several insights:
+These techniques provide several insights:
 
 \begin{enumerate}
-    \item The effectiveness of position embeddings can be partially explained by their ability to approximate the NTK, which governs the learning dynamics of wide neural networks.
-    \item The choice of frequencies in position embeddings can be guided by analysis of the NTK in the Fourier domain, potentially leading to more effective embedding designs.
-    \item The connection to Fourier features explains why position embeddings help models capture periodic patterns and overcome spectral bias, as they explicitly introduce a range of frequencies into the model's representation.
-    \item This perspective suggests that position embeddings might be optimized by considering the spectral properties of the data and the desired kernel for a given task.
+    \item Fourier features enable models to capture a broader range of frequencies, which is crucial for extending context length in attention mechanisms.
+    \item Linear interpolation using Fourier features allows for smooth transitions between different context lengths, enhancing model flexibility.
+    \item Nonlinear change of base techniques can be employed to dynamically adjust context length based on input characteristics, improving model adaptability.
+    \item This perspective suggests that attention mechanisms can be optimized by considering the spectral properties of the data and the desired context length for a given task.
 \end{enumerate}
 
-Furthermore, this unification opens up new avenues for research:
+Furthermore, this approach opens up new avenues for research:
 
 \begin{enumerate}
-    \item Developing new position embedding schemes based on NTK analysis for specific architectures or tasks.
-    \item Investigating the relationship between the NTK and the inductive biases introduced by different position embedding designs.
-    \item Exploring how the interplay between position embeddings and the NTK affects model generalization and extrapolation capabilities.
+    \item Developing new attention mechanisms that leverage Fourier features for context length extension.
+    \item Investigating the relationship between Fourier features and the inductive biases introduced by different attention designs.
+    \item Exploring how the interplay between Fourier features and attention mechanisms affects model generalization and extrapolation capabilities.
 \end{enumerate}
 
 \section{Practical Implications}
 
-Understanding the connections between position embeddings, NTK, and Fourier features has several practical implications:
+Understanding the use of Fourier features for context length extension has several practical implications:
 
 \begin{enumerate}
-    \item Architecture design: The frequency spectrum of the NTK can guide the design of more effective position embedding schemes.
-    \item Initialization strategies: Insights from the NTK can inform better initialization of position embeddings for improved training dynamics.
-    \item Transfer learning: The connection to Fourier features suggests that models with well-designed position embeddings may transfer more effectively across tasks with different input distributions.
-    \item Interpretability: Analyzing position embeddings in the Fourier domain can provide insights into what patterns the model has learned to recognize.
+    \item Architecture design: Fourier features can guide the design of more effective attention mechanisms for context length extension.
+    \item Initialization strategies: Insights from Fourier features can inform better initialization of attention mechanisms for improved training dynamics.
+    \item Transfer learning: The use of Fourier features suggests that models with well-designed attention mechanisms may transfer more effectively across tasks with different input distributions.
+    \item Interpretability: Analyzing attention mechanisms in the Fourier domain can provide insights into what patterns the model has learned to recognize.
 \end{enumerate}
 
 \section{Conclusion}
 
-By exploring the connections between position embeddings, the Neural Tangent Kernel, and Fourier features through the lens of Euler's formula, we gain a deeper understanding of the theoretical underpinnings of modern deep learning architectures. This unifying perspective not only enhances our theoretical understanding but also provides practical guidance for designing more effective and interpretable models. Future work may further explore these connections to develop novel architectures and training strategies that leverage these insights.
+By exploring the use of Fourier features for context length extension in attention mechanisms, we gain a deeper understanding of the theoretical underpinnings of modern deep learning architectures. This perspective not only enhances our theoretical understanding but also provides practical guidance for designing more effective and interpretable models. Future work may further explore these techniques to develop novel architectures and training strategies that leverage these insights.
 
 \bibliography{colm2024_conference}
 \bibliographystyle{colm2024_conference}
