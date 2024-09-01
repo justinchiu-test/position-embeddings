@@ -53,13 +53,11 @@ Here $\mathbf{x}_i \in \mathbb{R}^{d_k}$ is an embedding for position $i$, $\mat
 
 \begin{equation}
 \mathbf{R}(\bm{\theta},i)= \begin{pmatrix}
-\cos i\theta_1 & - \sin i\theta_1 &  \cdots & 0 & 0 \\
-\sin i\theta_1 & \cos i\theta_1 & \cdots & 0 & 0 \\
-% 0 & 0 & \cos m\theta_2 & - \sin m\theta_2 & \cdots & 0 & 0 \\
-% 0 & 0 & \sin m\theta_2 & \cos m\theta_2 & \cdots & 0 & 0 \\
+e^{i i\theta_1} & 0 &  \cdots & 0 & 0 \\
+0 & e^{i i\theta_1} & \cdots & 0 & 0 \\
 \vdots \\ 
-0 & 0 &  \cdots & \cos i\theta_\frac{d_k}{2}  & - \sin i\theta_\frac{d_k}{2}  \\
-0 & 0 &  \cdots & \sin i\theta_\frac{d_k}{2}  & \cos i\theta_\frac{d_k}{2}  \\
+0 & 0 &  \cdots & e^{i i\theta_\frac{d_k}{2}}  & 0 \\
+0 & 0 &  \cdots & 0  & e^{i i\theta_\frac{d_k}{2}}  \\
 \end{pmatrix}
 \end{equation}
 
