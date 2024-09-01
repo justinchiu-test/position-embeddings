@@ -63,6 +63,17 @@ Here $\mathbf{x}_i \in \mathbb{R}^{d_k}$ is an embedding for position $i$, $\mat
 \end{pmatrix}
 \end{equation}
 
+Additionally, using Euler's theorem, we can express this as:
+\begin{equation}
+\mathbf{R}(\bm{\theta},i)= \begin{pmatrix}
+e^{i i\theta_1} & 0 &  \cdots & 0 & 0 \\
+0 & e^{i i\theta_1} & \cdots & 0 & 0 \\
+\vdots \\ 
+0 & 0 &  \cdots & e^{i i\theta_\frac{d_k}{2}}  & 0 \\
+0 & 0 &  \cdots & 0  & e^{i i\theta_\frac{d_k}{2}}  \\
+\end{pmatrix}
+\end{equation}
+
 
 
 
