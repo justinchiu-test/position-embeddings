@@ -34,10 +34,9 @@ Fourier features have shown promise in improving model performance, particularly
 
 
 
-\subsection{Background: Attention and RoPE}
+\subsection{Background: Fourier Features in Attention Mechanisms}
 
-The bottleneck in long context modeling in Transformers is attention. Attention is defined over 
-$C$ embeddings $\mathbf{X} = [\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_C]^\top \in \mathbb{R}^{C \times d}$ where $d$ is the model dimension. Learned weight matrices $\mathbf{W}_v \in \mathbb{R}^{d \times d_k}$, $\mathbf{W}_q \in \mathbb{R}^{d \times d_k}$, and $\mathbf{W}_k \in \mathbb{R}^{d \times d_k}$ are used to transform these inputs where $d_k$ is the projected hidden dimension.  The attention mechanism itself computes the attention matrix and applies it to produce a weighted sum of the value vectors:
+The challenge of modeling long contexts in Transformers is primarily due to the limitations of the attention mechanism. Attention operates over $C$ embeddings $\mathbf{X} = [\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_C]^\top \in \mathbb{R}^{C \times d}$, where $d$ is the model dimension. Fourier features offer a powerful tool for enhancing these mechanisms by encoding positional information through frequency-based transformations. Learned weight matrices $\mathbf{W}_v \in \mathbb{R}^{d \times d_k}$, $\mathbf{W}_q \in \mathbb{R}^{d \times d_k}$, and $\mathbf{W}_k \in \mathbb{R}^{d \times d_k}$ are used to transform these inputs, where $d_k$ is the projected hidden dimension. The attention mechanism computes the attention matrix and applies it to produce a weighted sum of the value vectors:
 \begin{equation}
 \text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \mathbf{A} \mathbf{V} = \text{softmax}\left(\frac{\mathbf{Q} \mathbf{K}^\top}{\sqrt{d_k}}\right)\mathbf{V}.
 \end{equation}
