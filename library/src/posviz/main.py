@@ -39,7 +39,3 @@ def visualize_sinusoid():
 
 if __name__ == "__main__":
     app()
-import pandas as pd
-import numpy as np
-import typer
-from rich import print
