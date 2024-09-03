@@ -11,11 +11,9 @@ def generate_rope_embedding(seq_len, dim, base=10000):
     embedding = []
     for pos in range(seq_len):
         pos_embedding = []
-        for i in range(0, dim, 2):
+        for i in range(0, dim):
             theta = pos / (base ** (i / dim))
             pos_embedding.append(math.sin(theta))
-            if i + 1 < dim:
-                pos_embedding.append(math.cos(theta))
         embedding.append(pos_embedding)
     return np.array(embedding)
 
@@ -53,8 +51,8 @@ def visualize_sinusoid():
 @app.command()
 def visualize_rope_embedding():
     """Visualize a few dimensions from rope embeddings."""
-    seq_len = 100
-    dim = 8  # We'll visualize 8 dimensions
+    seq_len = 128
+    dim = 8 
     embedding = generate_rope_embedding(seq_len, dim)
     
     data = []

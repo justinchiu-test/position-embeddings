@@ -1,0 +1,17 @@
+[project]
+name = "posviz"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "altair>=5.4.1",
+    "pandas>=2.2.2",
+    "numpy>=2.1.0",
+    "typer>=0.12.5",
+    "rich>=13.8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
